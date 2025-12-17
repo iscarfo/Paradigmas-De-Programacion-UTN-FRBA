@@ -1,0 +1,315 @@
+
+import jugador.*
+import tablero.*
+import cartas.*
+import wollok.game.*
+
+object marco {
+  var property position = game.origin()
+  var imagen = "marco.png"
+  
+  method image() = imagen
+  
+  method cambiarImagen() {
+    if (imagen == "marco.png") {
+      imagen = "marco2.png"
+    } else {
+      imagen = "marco.png"
+    }
+  }
+}
+
+object monto1 {
+  var property position = game.origin()
+  
+  method image() = "monto.jpg"
+}
+
+object monto2 {
+  var property position = game.origin()
+  
+  method image() = "monto.jpg"
+}
+
+object manual {
+  var property position = game.origin()
+  
+  method image() = "jugadas.png"
+}
+
+object cartel {
+  var property position = game.origin()
+  var imagen = "cartel.png"
+  
+  method image() = imagen
+  
+  method cambiarImagen(nueva) {
+    imagen = nueva
+  }
+}
+
+program juego {
+  const jugador1 = new Jugador()
+  const jugador2 = new Jugador()
+  tablero.anadirJugadores(jugador1)
+  tablero.anadirJugadores(jugador2)
+  
+  jugador1.turno(1)
+  var jugador = tablero.jugadorConTurno()
+  
+  var mesaAux = tablero.mostrarMesa()
+  var manoAux = jugador.mostrarMano()
+  
+  var carta = 0
+  var indiceMesa = 0
+  var indiceMano = 0
+  var state = 0
+  var posX = 2
+  var posY = 17
+  var cont = 4
+  var montoVisible1 = false
+  var montoVisible2 = false
+  
+  game.width(40)
+  game.height(28)
+  
+  game.boardGround("fondo1.png")
+  
+  tablero.llenarMazo()
+  
+  if (!tablero.mostrarMazo().isEmpty()) {
+    // llenar mesa
+    tablero.llenarMesa()
+    mesaAux.forEach(
+      { carta =>
+        game.addVisual(carta)
+        carta.position(game.at(posX, posY))
+        posX = posX + 4
+      }
+    ) // repartir jugadores
+    
+    
+    tablero.repartirJugadores()
+    jugador1.mostrarMano().forEach(
+      { carta =>
+        game.addVisual(carta)
+        carta.position(game.at(cont + 4, 23))
+        cont = cont + 4
+      }
+    )
+    cont = 4
+    jugador2.mostrarMano().forEach(
+      { carta =>
+        game.addVisual(carta)
+        carta.position(game.at(cont + 4, 1))
+        cont = cont + 4
+      }
+    )
+  } else {
+    throw new Exception(
+      message = "El mazo no fue llenado correctamente antes de repartir."
+    )
+  }
+  
+  game.addVisual(cartel)
+  cartel.position(game.at(27, 20))
+  
+  game.addVisual(manual)
+  manual.position(game.at(30, 10))
+  
+  
+  
+  game.addVisual(marco)
+  marco.position(manoAux.get(0).position())
+  
+  
+  
+  keyboard.left().onPressDo(
+    { if (state == 0) {
+        //console.println(indiceMano)
+        indiceMano = indiceMano - 1
+        if (indiceMano < 0) {
+          indiceMano = manoAux.size() - 1
+        }
+        carta = manoAux.get(indiceMano)
+        marco.position(carta.position())
+      } else {
+        if (state == 1) {
+          indiceMesa = indiceMesa - 1
+          if (indiceMesa < 0) {
+            indiceMesa = mesaAux.size() - 1
+          }
+          carta = mesaAux.get(indiceMesa)
+          marco.position(carta.position())
+        }
+      } }
+  )
+  
+  keyboard.right().onPressDo(
+    { if (state == 0) {
+        //console.println(indiceMano)
+        indiceMano = indiceMano + 1
+        if (indiceMano >= manoAux.size()) {
+          indiceMano = 0
+        }
+        carta = manoAux.get(indiceMano)
+        marco.position(carta.position())
+      } else {
+        if (state == 1) {
+          indiceMesa = indiceMesa + 1
+          if (indiceMesa >= mesaAux.size()) {
+            indiceMesa = 0
+          }
+          carta = mesaAux.get(indiceMesa)
+          marco.position(carta.position())
+        }
+      } }
+  )
+  
+  keyboard.enter().onPressDo(
+    { 
+      if (jugador.mostrarCartasAJugar().contains(carta)) {
+        carta.seleccion()
+        jugador.mostrarCartasAJugar().remove(carta)
+      }
+      
+      if (manoAux.contains(carta)) {
+        state = 1
+      }
+      //console.println(carta.valorCarta())
+      //console.println(carta.paloCarta())
+      jugador.anadirCartaAJugar(carta)
+      return carta.seleccion()
+    }
+  )
+  
+  keyboard.e().onPressDo(
+    { 
+      state = 0
+      return if (jugador.hayJugada()) {
+        jugador.mostrarCartasAJugar().forEach(
+          { _carta => game.removeVisual(_carta) }
+        )
+        tablero.jugada(jugador)
+        jugador.jugada()
+        
+        if ((jugador1.turno() == 1) && (!montoVisible1)) {
+          game.addVisual(monto1)
+          monto1.position(game.at(26, 26))
+          montoVisible1 = true
+        }
+        if ((jugador2.turno() == 1) && (!montoVisible2)) {
+          game.addVisual(monto2)
+          monto2.position(game.at(26, 1))
+          montoVisible2 = true
+        }
+        
+        console.println("jugador1 " + jugador1.turno())
+        console.println("jugador2 " + jugador2.turno())
+        
+        
+        tablero.cambiarTurno()
+        console.println("jugador1 " + jugador1.turno())
+        console.println("jugador2 " + jugador2.turno())
+        jugador = tablero.jugadorConTurno()
+        console.println("jugador1 " + jugador1.turno())
+        console.println("jugador2 " + jugador2.turno())
+        mesaAux = tablero.mostrarMesa()
+        manoAux = jugador.mostrarMano()
+        
+        marco.cambiarImagen()
+      } else {
+        jugador.mostrarCartasAJugar().forEach({ _carta => _carta.seleccion() })
+        jugador.limpiarCartasAJugar()
+        cartel.cambiarImagen("noda15.png")
+        game.schedule(4000, { cartel.cambiarImagen("cartel.png") })
+      }
+    }
+  )
+  
+  keyboard.t().onPressDo(
+    { 
+      state = 0
+      if (manoAux.contains(carta)) {
+        const columna = mesaAux.size() % 6
+        const index = mesaAux.size()
+        
+        posX = 2
+        index.times(
+          { _ => if (mesaAux.any(
+              { _carta =>
+                (_carta.position().x() == posX) && (_carta.position().y() == posY) }
+            )) {
+              console.println("aca")
+              if (columna == 0) {
+                posY = posY - 4
+              }
+              posX = posX + 4
+            } }
+        )
+        
+        game.removeVisual(carta)
+        tablero.anadirCartaMesa(carta)
+        jugador.eliminarCartaMano(carta)
+        
+        game.addVisual(carta)
+        carta.position(game.at(posX, posY))
+        
+        
+        if (carta.image() == (((carta.paloCarta() + carta.valorCarta()) + "s") + ".png"))
+          carta.seleccion()
+      }
+      
+      tablero.cambiarTurno()
+      jugador = tablero.jugadorConTurno()
+      marco.cambiarImagen()
+      mesaAux = tablero.mostrarMesa()
+      manoAux = jugador.mostrarMano()
+    }
+  )
+  
+  
+  keyboard.f().onPressDo(
+    { 
+      if (tablero.mostrarMazo().isEmpty()) cartel.cambiarImagen(
+          "nohaycartas.png"
+        )
+      if (jugador1.mostrarMano().isEmpty() && jugador2.mostrarMano().isEmpty()) {
+        cont = 4
+        tablero.repartirJugadores()
+        jugador1.mostrarMano().forEach(
+          { carta =>
+            game.addVisual(carta)
+            carta.position(game.at(cont + 4, 23))
+            cont = cont + 4
+          }
+        )
+        cont = 4
+        jugador2.mostrarMano().forEach(
+          { carta =>
+            game.addVisual(carta)
+            carta.position(game.at(cont + 4, 1))
+            cont = cont + 4
+          }
+        )
+      }
+    }
+  )
+  
+  
+  keyboard.q().onPressDo(
+    { if (tablero.mostrarMazo().isEmpty()) {
+        tablero.contarPuntos()
+        console.println(jugador1.puntajeJugador())
+        console.println(jugador2.puntajeJugador())
+        tablero.mostrarMesa().forEach(
+          { _carta =>
+            jugador.anadirCartaMonto(_carta)
+            return game.removeVisual(_carta)
+          }
+        )
+        tablero.limpiarMesa()
+        // if(jugador1.puntajeJugador() > jugador2.puntajeJugador()) {
+      } })  
+  game.start()
+}

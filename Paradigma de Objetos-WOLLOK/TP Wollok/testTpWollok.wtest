@@ -1,0 +1,92 @@
+import tpWollok.*
+
+test "Espada con multiplicador de 15 y llevada Enano" {
+  const espada = new Espada (multiplicador=15,guerreroPortador=unEnano)
+  assert.equals(300, espada.poder())
+  }
+
+test "Hacha con mango de 50 cm, con una hoja de 5kg." {
+  const hacha = new Hacha (largoMango=50,pesoHoja=5)
+  assert.equals(250, hacha.poder())
+}
+
+test "Baculo con poder 300." {
+  const baculo = new Baculo (poder=300)
+  assert.equals(300, baculo.poder())
+}
+
+test "Daga con multiplicador de 15 y llevada Enano." {
+  const daga = new Daga (multiplicador=15,guerreroPortador=unEnano)
+  assert.equals(150, daga.poder())
+
+}
+
+test "Poder de Frodo sin items" {
+  frodo.asignarArma(daga8)
+  assert.equals(50, frodo.poder())
+}
+
+test "Poder de Gimli" {
+  assert.equals(2175, gimli.poder())
+}
+
+test "Poder de Legolas" {
+  legolas.asignarArma(espada12)
+  assert.equals(980, legolas.poder())
+}
+
+test "Poder de Aragorn" {
+  aragorn.asignarArma(andruil)
+  aragorn.asignarArma(daga10)
+  assert.equals(102.25, aragorn.poder())
+}
+
+test "Poder de Gandalf" {
+  gandalf.asignarArma(baculo400)
+  gandalf.asignarArma(glamdring)
+  assert.equals(2340, gandalf.poder())
+}
+
+test "Gandalf con 9 de vida" {
+  gandalf.modificarVida(-91)
+  gandalf.asignarArma(baculo400)
+  gandalf.asignarArma(glamdring)
+  assert.equals(3540, gandalf.poder())
+}
+
+test "Poder de Legolas con medio punto de destreza" {
+  const legolasPrueba = new Elfo (origen=elfico,vida=80,destrezaPropia=0.5,armas=[],elementosUtiles=[])
+  legolasPrueba.asignarArma(espada12)
+  assert.equals(830, legolasPrueba.poder())
+}
+
+test "Gandalf no pasa por lebennin ya que no tiene 30 lembas" {
+  gandalf.asignarArma(baculo400)
+  gandalf.asignarArma(glamdring)
+  assert.that(!lebennin.pasadaPor(gandalf))
+}
+
+test "MinasTirith no es pasado por Legolas (1 arma) pero si por Aragorn (2 armas)" {
+  legolas.asignarArma(espada12)
+  aragorn.asignarArma(andruil)
+  aragorn.asignarArma(daga10)
+  assert.that(!minasTirith.pasadaPor(legolas))
+  assert.that(minasTirith.pasadaPor(aragorn))
+}
+
+test "Legolas y Gandalf no pasan por Gondor ya que no pueden atravesar lebennin"{
+  legolas.asignarArma(espada12)
+  gandalf.asignarArma(baculo400)
+  gandalf.asignarArma(glamdring)
+  assert.that(!gondor.pasadaPorGrupo([gandalf,legolas]))
+}
+
+test "Gimli y Gandalf pasan por MinasTirith y lossarnach y disminuye en 9 su vida" {
+  gandalf.asignarArma(baculo400)
+  gandalf.asignarArma(glamdring)
+  const grupo = [gandalf,gimli]
+  assert.that(otroCamino.pasadaPorGrupo(grupo))
+  otroCamino.consecuenciasGrupo(grupo)
+  assert.equals(91,gandalf.vidaActual())
+  assert.equals(66,gimli.vidaActual())
+}

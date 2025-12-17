@@ -1,0 +1,26 @@
+import ejemplo.*
+
+describe "Tests Pepita"{
+    
+    test "al iniciar pepita no esta cansada"
+    {
+    assert.notThat(pepita.estaCansada())}
+
+    test "si vuela 9 metros se cansa"{
+        pepita.volar(9)
+        assert.that(pepita.estaCansada())
+    }
+
+    test "luego de comer alpiste sigue cansada"{
+        pepita.volar(9)
+        pepita.comer(alpiste)
+        assert.that(pepita.estaCansada())
+    }
+
+    test "luego de comer manzana no sigue cansada"{
+        pepita.volar(9)
+        pepita.comer(manzana)
+        assert.notThat(pepita.estaCansada())
+    }
+}
+

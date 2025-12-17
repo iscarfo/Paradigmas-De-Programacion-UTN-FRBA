@@ -1,0 +1,67 @@
+import pepitaJuego.*
+import wollok.game.*
+
+
+program PepitaGame{
+
+// Estructura del fondo
+    game.height(10)      
+    game.width(10)
+    game.boardGround("fondo.png")
+    
+        
+    game.addVisual(nido)
+    game.addVisual(manzana)
+    game.addVisual(alpiste)
+    game.addVisual(pepita)
+
+//cuando toco la tecla se mueve a la derecha
+    keyboard.right().onPressDo({        
+        pepita.position(pepita.position().right(1))
+    })
+
+    keyboard.up().onPressDo({        
+        pepita.position(pepita.position().up(1))
+    })
+
+    keyboard.left().onPressDo({        
+        pepita.position(pepita.position().left(1))
+    })
+
+
+//Al objeto le aparece un mensaje en pantalla " game.say"
+    keyboard.space().onPressDo({
+        game.say(pepita,                
+        if(pepita.estaCansada()) "Estoy cansado jefe"
+        else "Estoy para volar")
+    }) 
+
+//Se ejecuta la accion cada determinado tiempo en milisegundos 
+    game.onTick(2000, "movimiento",{
+        pepita.position(pepita.position().down(1))
+    })
+
+
+keyboard.c().onPressDo({
+    if(!game.colliders(pepita).isEmpty()) {
+        pepita.comer(game.colliders(pepita).first())
+        game.removeVisual(game.colliders(pepita).first())
+    }
+})
+
+
+
+game.onCollideDo(nido, { elemento =>
+            game.say(elemento,"gané")
+            game.schedule(2000, {game.stop()})
+        })
+
+
+game.onTick(1000, "pepitaMuere",{
+   if(!pepita.estaViva()){
+       pepita.image("miniGris.png")
+       game.schedule(2000,{game.stop()})
+}})
+    game.start()
+
+}

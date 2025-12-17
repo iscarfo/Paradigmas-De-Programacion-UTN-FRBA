@@ -1,0 +1,34 @@
+import Planetas.*
+
+test "El planeta de prueba 1 es valioso y la delegacion diplomatica esta formado por 3 personas"{
+  assert.that(planetaPrueba1.esValioso())
+  assert.equals(3, planetaPrueba1.delegacionDiplomatica().size())
+}
+
+test "Si p4 cumple un año la delegacion diplomática será de 4 personas"{
+  p4.cumplirAnios()
+  assert.equals(4, planetaPrueba1.delegacionDiplomatica().size())
+}
+
+test "El planeta de prueba 2 no es valioso ya que no tiene construcciones"{
+  assert.that(!planetaPrueba2.esValioso())
+}
+
+test "Si el constructor de prueba 1 trabaja 4 horas en el planeta de prueba 1, crea una muralla de longitud 2 y se queda con 25 monedas"{
+  c1.trabajar(4,planetaPrueba1)
+  assert.equals(4,planetaPrueba1.construcciones().size())
+  assert.equals(25,c1.cantRecursos())
+}
+
+test "Si el constructor de prueba 2 trabaja 4 horas en el planeta de prueba 1, crea un museo y se queda con 25 monedas"{
+  c2.trabajar(4,planetaPrueba1)
+  assert.equals(4,planetaPrueba1.construcciones().size())
+  assert.equals(35,c2.cantRecursos())
+}
+
+//Falta hacer test de productor pero creo que funciona bien
+
+test "En el planeta de prueba 3 la delegación diplomatica la integran pr1 y c1"{
+  assert.equals(2,planetaPrueba3.delegacionDiplomatica().size())
+}
+
