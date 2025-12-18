@@ -35,6 +35,7 @@ A lo largo de la cursada se trabajaron los siguientes paradigmas:
 ## Trabajo Práctico Integrador
 
 Como cierre de la materia, se desarrolló un **Trabajo Práctico Integrador** en el paradigma de **Objetos**, utilizando **Wollok Game**.
+Este se encuentra dentro de la carpeta **"TP Game"**
 
 El proyecto consiste en la implementación del juego de cartas **“La Escoba de 15”**, desarrollado en grupo, e incluye:
 
